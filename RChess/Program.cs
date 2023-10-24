@@ -18,6 +18,7 @@ namespace RChess
 				game.drawChessboard();
 				game.drawPieces();
 				game.drawMove();
+				game.drawCoordinates();
 				//game.drawBoardNum();
 				EndDrawing();
 			}

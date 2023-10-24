@@ -183,5 +183,17 @@
 				}
 			}
 		}
+		public void drawCoordinates()
+		{
+			string b = "abcdefgh";
+			for (int n = 0; n < 8; n++)
+			{
+				DrawText((8 - n).ToString(), 7 + (int)boardrect.x, n * chessboard_width + 10 + (int)boardrect.y, 20, (n % 2 == 1) ? new Color(121, 151, 81, 255) : new Color(232, 236, 201, 255));
+			}
+			for (int n = 0; n < 8; n++)
+			{
+				DrawText(b[n].ToString(), n * chessboard_width + (int)(chessboard_width * 0.6) + 10 + (int)boardrect.x, (int)(chessboard_width * 7.7) + (int)boardrect.y, 20, (n % 2 == 0) ? new Color(121, 151, 81, 255) : new Color(232, 236, 201, 255));
+			}
+		}
 	}
 }
