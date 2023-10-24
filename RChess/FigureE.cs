@@ -23,7 +23,7 @@ namespace RChess
 		}
 		public void draw()
 		{
-			DrawTextureEx(textures[(int)type], new(x * Game.chessboard_width, y * Game.chessboard_width), 0, 0.5859375f, WHITE);
+			DrawTextureEx(textures[(int)type], new(x * Game.chessboard_width + Game.boardrect.x, y * Game.chessboard_width + Game.boardrect.y), 0, 75f / 128f, WHITE);
 		}
 
 	}

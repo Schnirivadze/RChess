@@ -17,6 +17,7 @@
 			{0,0,0,0,0,0,0,0}
 		};
 		public static int chessboard_width = 75;
+		public static Rectangle boardrect = new(100, 100, chessboard_width * 8, chessboard_width * 8);
 		public int selected_piece = -1;
 		List<Vector2> move = new List<Vector2>();
 		List<Figure> figuresF = new List<Figure>();
@@ -30,9 +31,18 @@
 		public Vector2 getmouseV()
 		{
 			Vector2 v = GetMousePosition();
-			v.X = v.X / chessboard_width; if (v.X > 7) v.X = 7;
-			v.Y = v.Y / chessboard_width; if (v.Y > 7) v.Y = 7;
-			return v;
+			if (CheckCollisionPointRec(v, Game.boardrect))
+			{
+				v.X = (v.X - boardrect.x) / chessboard_width; if (v.X > 7) v.X = 7; if (v.X < 0) v.X = 0;
+				v.Y = (v.Y - boardrect.y) / chessboard_width; if (v.Y > 7) v.Y = 7; if (v.Y < 0) v.Y = 0;
+				return v;
+			}
+			else
+			{
+				v.X = -1;
+				v.Y = -1;
+				return v;
+			}
 		}
 		//-----------other---------------------------------
 		public void generatePieces()
@@ -108,15 +118,18 @@
 				if (Game.board[(int)move[m].Y, (int)move[m].X] == 1)
 				{
 					DrawCircle(
-						(int)(move[m].X * chessboard_width + chessboard_width / 2),
-						(int)(move[m].Y * chessboard_width + chessboard_width / 2),
+						(int)(move[m].X * chessboard_width + chessboard_width / 2 + boardrect.x),
+						(int)(move[m].Y * chessboard_width + chessboard_width / 2 + boardrect.y),
 						chessboard_width / 5f,
 						new(0, 0, 0, 50));
 				}
 				else if (Game.board[(int)move[m].Y, (int)move[m].X] == 2)
 				{
 					DrawRing(
-						new((int)(move[m].X * chessboard_width + chessboard_width / 2), (int)(move[m].Y * chessboard_width + chessboard_width / 2)),
+						new(
+							(int)(move[m].X * chessboard_width + chessboard_width / 2 + boardrect.x), 
+							(int)(move[m].Y * chessboard_width + chessboard_width / 2 + boardrect.y)
+							),
 						chessboard_width / 2.5f, chessboard_width / 2, 0, 360, 36, new(0, 0, 0, 50)
 						);
 				}
@@ -124,8 +137,8 @@
 				{
 					move.RemoveAt(m);
 					//DrawCircle(
-					//	(int)(move[m].X * chessboard_width + chessboard_width / 2),
-					//	(int)(move[m].Y * chessboard_width + chessboard_width / 2),
+					//	(int)(move[m].X * chessboard_width + chessboard_width / 2 + boardrect.x),
+					//	(int)(move[m].Y * chessboard_width + chessboard_width / 2 + boardrect.y),
 					//	chessboard_width / 5f,
 					//	new(255, 0, 0, 255));
 				}
@@ -134,18 +147,17 @@
 		public void drawChessboard()
 		{
 			Vector2 v = getmouseV();
-			//SetWindowTitle($"[{(int)v.X};{(int)v.Y}]");
 
 			for (int y = 0; y < 8; y++)
 			{
 				for (int x = 0; x < 8; x++)
 				{
 					DrawRectangle(
-						x * chessboard_width,
-						y * chessboard_width,
+						x * chessboard_width + (int)boardrect.x,
+						y * chessboard_width + (int)boardrect.y,
 						chessboard_width,
 						chessboard_width,
-						((int)v.X == x && (int)v.Y == y) ? Color.RED : (y % 2 == x % 2) ? new Color(121, 151, 81, 255) : new Color(232, 236, 201, 255)
+						((int)v.X == x && (int)v.Y == y) ? (y % 2 == x % 2) ? new Color(189, 203, 67, 255) : new Color(244, 246, 126, 255) : (y % 2 == x % 2) ? new Color(121, 151, 81, 255) : new Color(232, 236, 201, 255)
 						);
 				}
 			}
@@ -167,7 +179,7 @@
 			{
 				for (int x = 0; x < 8; x++)
 				{
-					DrawText(board[y, x].ToString(), x * chessboard_width + chessboard_width / 2, y * chessboard_width + chessboard_width / 2, 20, Color.RED); ;
+					DrawText(board[y, x].ToString(), x * chessboard_width + chessboard_width / 2+(int)boardrect.x, y * chessboard_width + chessboard_width / 2+(int)boardrect.y, 20, Color.RED); ;
 				}
 			}
 		}
