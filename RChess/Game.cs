@@ -18,23 +18,23 @@
 		};
 		public static int chessboard_width = 75;
 		public static Rectangle boardrect = new(100, 100, chessboard_width * 8, chessboard_width * 8);
-		public int selected_piece = -1;
-		List<Vector2> move = new List<Vector2>();
-		List<Figure> figuresF = new List<Figure>();
-		List<FigureE> figuresE = new List<FigureE>();
+		public static int selected_piece = -1;
+		public static List<Vector2> move = new List<Vector2>();
+		static List<Figure> figuresF = new List<Figure>();
+		static List<FigureE> figuresE = new List<FigureE>();
 		//-----------get-----------------------------------
-		public static int getboard(int x, int y)
+		public static int getboard(float x, float y)
 		{
-			if (y >= 0 && x >= 0 && y <= 7 && x <= 7) return Game.board[y, x];
+			if (y >= 0 && x >= 0 && y <= 7 && x <= 7) return Game.board[(int)y, (int)x];
 			return -1;
 		}
-		public Vector2 getmouseV()
+		public static Vector2 getmouseV()
 		{
 			Vector2 v = GetMousePosition();
 			if (CheckCollisionPointRec(v, Game.boardrect))
 			{
-				v.X = (v.X - boardrect.x) / chessboard_width; if (v.X > 7) v.X = 7; if (v.X < 0) v.X = 0;
-				v.Y = (v.Y - boardrect.y) / chessboard_width; if (v.Y > 7) v.Y = 7; if (v.Y < 0) v.Y = 0;
+				v.X = (int)(v.X - boardrect.x) / chessboard_width; if (v.X > 7) v.X = 7; if (v.X < 0) v.X = 0;
+				v.Y = (int)(v.Y - boardrect.y) / chessboard_width; if (v.Y > 7) v.Y = 7; if (v.Y < 0) v.Y = 0;
 				return v;
 			}
 			else
@@ -45,7 +45,7 @@
 			}
 		}
 		//-----------other---------------------------------
-		public void generatePieces()
+		public static void generatePieces()
 		{
 			figuresF.Clear();
 			figuresF.Add(new Figure(FigureType.Rook, 0, 7));
@@ -84,33 +84,28 @@
 			figuresE.Add(new FigureE(FigureType.Pawn, 6, 1));
 			figuresE.Add(new FigureE(FigureType.Pawn, 7, 1));
 		}
-		public void handleClick()
+		public static void handleClick()
 		{
 			Vector2 click = getmouseV();
-			for (int m = 0; m < move.Count; m++)
+			if (move.Contains(click))
 			{
-				if ((int)click.X == move[m].X && (int)click.Y == move[m].Y)
-				{
-					int fi = figuresE.FindIndex(f => f.x == (int)click.X && f.y == (int)click.Y);
-					if (fi != -1)
-					{
-						figuresE.RemoveAt(fi);
-					}
-					figuresF[selected_piece].moveTo(click);
-					selected_piece = -1;
-
-					break;
-				}
-			}
-			move.Clear();
+				move.Clear();
+				figuresF[selected_piece].moveTo(click);
+				selected_piece = -1;
+				return;
+			};
 			for (int p = 0; p < figuresF.Count; p++)
 			{
-				if ((int)click.X == figuresF[p].x && (int)click.Y == figuresF[p].y) { figuresF[p].getMove(ref move); selected_piece = p; break; }
+				if ((int)click.X == figuresF[p].x && (int)click.Y == figuresF[p].y)
+				{
+					figuresF[p].getMove(ref move);
+					selected_piece = p;
+					return;
+				}
 			}
-
 		}
 		//-----------draw----------------------------------
-		public void drawMove()
+		public static void drawMove()
 		{
 
 			for (int m = 0; m < move.Count; m++)
@@ -127,7 +122,7 @@
 				{
 					DrawRing(
 						new(
-							(int)(move[m].X * chessboard_width + chessboard_width / 2 + boardrect.x), 
+							(int)(move[m].X * chessboard_width + chessboard_width / 2 + boardrect.x),
 							(int)(move[m].Y * chessboard_width + chessboard_width / 2 + boardrect.y)
 							),
 						chessboard_width / 2.5f, chessboard_width / 2, 0, 360, 36, new(0, 0, 0, 50)
@@ -144,7 +139,7 @@
 				}
 			}
 		}
-		public void drawChessboard()
+		public static void drawChessboard()
 		{
 			Vector2 v = getmouseV();
 
@@ -162,7 +157,7 @@
 				}
 			}
 		}
-		public void drawPieces()
+		public static void drawPieces()
 		{
 			for (int f = 0; f < figuresF.Count; f++)
 			{
@@ -173,17 +168,17 @@
 				figuresE[e].draw();
 			}
 		}
-		public void drawBoardNum()
+		public static void drawBoardNum()
 		{
 			for (int y = 0; y < 8; y++)
 			{
 				for (int x = 0; x < 8; x++)
 				{
-					DrawText(board[y, x].ToString(), x * chessboard_width + chessboard_width / 2+(int)boardrect.x, y * chessboard_width + chessboard_width / 2+(int)boardrect.y, 20, Color.RED); ;
+					DrawText(board[(int)y, (int)x].ToString(), x * chessboard_width + chessboard_width / 2 + (int)boardrect.x, y * chessboard_width + chessboard_width / 2 + (int)boardrect.y, 20, Color.RED); ;
 				}
 			}
 		}
-		public void drawCoordinates()
+		public static void drawCoordinates()
 		{
 			string b = "abcdefgh";
 			for (int n = 0; n < 8; n++)
@@ -194,6 +189,19 @@
 			{
 				DrawText(b[n].ToString(), n * chessboard_width + (int)(chessboard_width * 0.6) + 10 + (int)boardrect.x, (int)(chessboard_width * 7.7) + (int)boardrect.y, 20, (n % 2 == 0) ? new Color(121, 151, 81, 255) : new Color(232, 236, 201, 255));
 			}
+		}
+		public static void drawAll()
+		{
+			BeginDrawing();
+			DrawFPS(0, 0);
+			ClearBackground(new(48, 46, 43, 255));
+			drawChessboard();
+			drawPieces();
+			drawMove();
+			drawCoordinates();
+			EndDrawing();
+
+			//drawBoardNum();
 		}
 	}
 }

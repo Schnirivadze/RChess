@@ -2,8 +2,8 @@
 {
 	using Raylib_cs;
 	using System.Numerics;
-	using static Raylib_cs.Raylib;
 	using static Raylib_cs.Color;
+	using static Raylib_cs.Raylib;
 	public enum FigureType
 	{
 		King,
@@ -15,6 +15,7 @@
 	}
 	class Figure
 	{
+
 		static Texture2D[] textures = {
 			LoadTexture("pieces\\white-king.png"),
 			LoadTexture("pieces\\white-queen.png"),
@@ -24,7 +25,7 @@
 			LoadTexture("pieces\\white-pawn.png"),
 		};
 		public FigureType type;
-		public int x, y;
+		public float x, y;
 
 		public Figure(FigureType type, int x, int y)
 		{
@@ -34,7 +35,7 @@
 		}
 		public void draw()
 		{
-			DrawTextureEx(textures[(int)type], new(x * Game.chessboard_width+Game.boardrect.x, y * Game.chessboard_width+Game.boardrect.y), 0, 75f/128f, WHITE);
+			DrawTextureEx(textures[(int)type], new(x * Game.chessboard_width + Game.boardrect.x, y * Game.chessboard_width + Game.boardrect.y), 0, 75f / 128f, WHITE);
 		}
 		public void getMove(ref List<Vector2> move)
 		{
@@ -119,10 +120,21 @@
 		}
 		public void moveTo(Vector2 pos)
 		{
-			Game.board[y, x] = 1;
-			x = (int)pos.X;
-			y = (int)pos.Y;
-			Game.board[y, x] = 0;
+			Game.move.Clear();
+			Game.board[(int)y, (int)x] = 1;
+			Vector2 dist = Vector2.Subtract(pos, new(x, y));
+			int ammount_of_frames = (int)(Settings.PieceMovementTime / (1f / GetFPS()));
+			dist.X /= ammount_of_frames;
+			dist.Y /= ammount_of_frames;
+			for (int frames = 0; frames < ammount_of_frames; frames++)
+			{
+				x += dist.X;
+				y += dist.Y;
+				Game.drawAll();
+			}
+			x = pos.X;
+			y = pos.Y;
+			Game.board[(int)y, (int)x] = 0;
 
 		}
 
