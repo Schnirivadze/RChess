@@ -1,32 +1,38 @@
 ﻿namespace RChess
 {
 	using Raylib_cs;
+	using System.Collections.Generic;
 	using System.Numerics;
 	using static Raylib_cs.Raylib;
 	class Game
 	{
 		public Game() { }
-		public static byte[,] board = {
-			{2,2,2,2,2,2,2,2},
-			{2,2,2,2,2,2,2,2},
-			{1,1,1,1,1,1,1,1},
-			{1,1,1,1,1,1,1,1},
-			{1,1,1,1,1,1,1,1},
-			{1,1,1,1,1,1,1,1},
-			{0,0,0,0,0,0,0,0},
-			{0,0,0,0,0,0,0,0}
-		};
-		public static int chessboard_width = 75;
+		public static int chessboard_width = 90;
 		public static Rectangle boardrect = new(100, 100, chessboard_width * 8, chessboard_width * 8);
 		public static int selected_piece = -1;
-		public static List<Vector2> move = new List<Vector2>();
-		static List<Figure> figuresF = new List<Figure>();
-		static List<FigureE> figuresE = new List<FigureE>();
+		public static List<Vector2> move = new();
+		static readonly List<Figure> figuresF = new();
+		static readonly List<FigureE> figuresE = new();
 		//-----------get-----------------------------------
 		public static int getboard(float x, float y)
 		{
-			if (y >= 0 && x >= 0 && y <= 7 && x <= 7) return Game.board[(int)y, (int)x];
-			return -1;
+			if (y >= 0 && x >= 0 && y <= 7 && x <= 7)
+			{
+				if (figuresF.Where(ff => ff.pos.X == x && ff.pos.Y == y).Any()) return 0;
+				else if (figuresE.Where(ff => ff.pos.X == x && ff.pos.Y == y).Any()) return 2;
+				else return 1;
+			}
+			else return -1;
+		}
+		public static int getboard(Vector2 coor)
+		{
+			if (coor.Y >= 0 && coor.X >= 0 && coor.Y <= 7 && coor.X <= 7)
+			{
+				if (figuresF.Where(ff => ff.pos == coor).Any()) return 0;
+				else if (figuresE.Where(ff => ff.pos == coor).Any()) return 2;
+				else return 1;
+			}
+			else return -1;
 		}
 		public static Vector2 getmouseV()
 		{
@@ -89,14 +95,18 @@
 			Vector2 click = getmouseV();
 			if (move.Contains(click))
 			{
+				int fi = figuresE.FindIndex(f => f.pos == click);
 				move.Clear();
 				figuresF[selected_piece].moveTo(click);
+				figuresF[selected_piece].moved = true;
+				if (fi != -1) figuresE.RemoveAt(fi);
 				selected_piece = -1;
 				return;
 			};
+			move.Clear();
 			for (int p = 0; p < figuresF.Count; p++)
 			{
-				if ((int)click.X == figuresF[p].x && (int)click.Y == figuresF[p].y)
+				if (click == figuresF[p].pos)
 				{
 					figuresF[p].getMove(ref move);
 					selected_piece = p;
@@ -110,7 +120,7 @@
 
 			for (int m = 0; m < move.Count; m++)
 			{
-				if (Game.board[(int)move[m].Y, (int)move[m].X] == 1)
+				if (getboard(move[m]) == 1)
 				{
 					DrawCircle(
 						(int)(move[m].X * chessboard_width + chessboard_width / 2 + boardrect.x),
@@ -118,7 +128,7 @@
 						chessboard_width / 5f,
 						new(0, 0, 0, 50));
 				}
-				else if (Game.board[(int)move[m].Y, (int)move[m].X] == 2)
+				else if (getboard(move[m]) == 2)
 				{
 					DrawRing(
 						new(
@@ -131,18 +141,12 @@
 				else
 				{
 					move.RemoveAt(m);
-					//DrawCircle(
-					//	(int)(move[m].X * chessboard_width + chessboard_width / 2 + boardrect.x),
-					//	(int)(move[m].Y * chessboard_width + chessboard_width / 2 + boardrect.y),
-					//	chessboard_width / 5f,
-					//	new(255, 0, 0, 255));
 				}
 			}
 		}
 		public static void drawChessboard()
 		{
 			Vector2 v = getmouseV();
-
 			for (int y = 0; y < 8; y++)
 			{
 				for (int x = 0; x < 8; x++)
@@ -159,23 +163,13 @@
 		}
 		public static void drawPieces()
 		{
-			for (int f = 0; f < figuresF.Count; f++)
-			{
-				figuresF[f].draw();
-			}
 			for (int e = 0; e < figuresE.Count; e++)
 			{
 				figuresE[e].draw();
 			}
-		}
-		public static void drawBoardNum()
-		{
-			for (int y = 0; y < 8; y++)
+			for (int f = 0; f < figuresF.Count; f++)
 			{
-				for (int x = 0; x < 8; x++)
-				{
-					DrawText(board[(int)y, (int)x].ToString(), x * chessboard_width + chessboard_width / 2 + (int)boardrect.x, y * chessboard_width + chessboard_width / 2 + (int)boardrect.y, 20, Color.RED); ;
-				}
+				figuresF[f].draw();
 			}
 		}
 		public static void drawCoordinates()
@@ -200,8 +194,6 @@
 			drawMove();
 			drawCoordinates();
 			EndDrawing();
-
-			//drawBoardNum();
 		}
 	}
 }

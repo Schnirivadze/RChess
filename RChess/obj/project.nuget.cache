@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "X0PwmSwSv0qni3HCmD3rFg8DGaV6eeBnNl6IZCvsTcagcWWhV6H1r9locBuEOWakQzs59gOmNAbXdva42r8WcQ==",
+  "success": true,
+  "projectFilePath": "C:\\Projects\\cs\\games\\RChess\\RChess\\RChess.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\andrew\\.nuget\\packages\\raylib-cs\\4.5.0.4\\raylib-cs.4.5.0.4.nupkg.sha512",
+    "C:\\Users\\andrew\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}
