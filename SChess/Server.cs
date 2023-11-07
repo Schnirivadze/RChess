@@ -1,19 +1,25 @@
-﻿using Shared;
+﻿#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8604 // Possible null reference argument.
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS0618 // Type or member is obsolete
+using Shared;
 using System.Net.Sockets;
 using System.Text;
+using System.Xml;
 
 namespace SChess
 {
 	class Server
 	{
-		public static List<User> users = new List<User>();
+		public static Dictionary<string, User> users = new();
 		public static List<Thread> threads = new List<Thread>();
 		static Random rnd = new();
 		static void Main()
 		{
+
+			File.WriteAllText("logs\\insend.xml", "");
+			File.WriteAllText("logs\\outsend.xml", "");
 			Console.WriteLine("Server getting ready");
-			File.WriteAllText("logs\\outsend.txt", "");
-			File.WriteAllText("logs\\insend.txt", "");
 			TcpListener server = new(13000);
 			try
 			{
@@ -47,19 +53,16 @@ namespace SChess
 				}
 			}
 		}
-		static int GetUserPlace(string id)
-		{
-			return users.FindIndex(u => u.id == id);
-		}
 		private static void HandleUser(object? obj)
 		{
 			Console.WriteLine("Client getting ready to be handeled");
 			TcpClient client = obj as TcpClient;
+			client.Client.Ttl = 255;
 			NetworkStream stream = client.GetStream();
 			StreamReader reader = new StreamReader(stream, Encoding.UTF8);
 			StreamWriter writer = new StreamWriter(stream, Encoding.UTF8);
 			Packet packet = new();
-			Console.WriteLine("Client is handeled");
+			Console.WriteLine($"{client.Client.RemoteEndPoint} is handeled");
 
 
 			//get name
@@ -69,33 +72,47 @@ namespace SChess
 			Console.WriteLine($"Clients username: {username}");
 			string id = $"{rnd.Next(int.MaxValue)}";
 			Console.WriteLine($"{username}'s id: {id}");
-			users.Add(new(id, username));
+			users.Add(id, new(username));
 
 			while (users.Count < 2) { Thread.Sleep(1000); }
 			//send enemyid
-			packet = new();
-			string enid = users.Where(e => e.id != id && e.conected == false).First().id;
+			string enid = users.Where(e => e.Key != id && e.Value.conected == false).First().Key;
 			Console.WriteLine($"{username}'s enemy id: {enid}");
-			packet.AddInfo(InfoType.EnemyId, enid);
-			packet.Assemble();
-			writer.WriteLine(packet.ToString());
+			writer.WriteLine();
 			writer.Flush();
 
-			while (client.Connected)
+			string readwrite = "";
+
+			while (client.Client.Connected)
 			{
-				Thread.Sleep(100000);
-				////read
-				//packet = new(reader.ReadLine());
-				//int enemyindex=GetUserPlace(packet.GetInfo(InfoType.Id));
-				//File.AppendAllText("logs\\insend.xml", $"<insend time=\"{DateTime.Now.ToString("MM/dd/yy HH:mm:ss")}\">\t{packet.ToString()}\n");
+				try
+				{
+					Thread.Sleep(1000);
+					//read
+					readwrite = "read";
+					packet = new(reader.ReadLine());
+					users[id].figures=packet.GetBoard();				//<----------
+					File.AppendAllText("logs\\insend.xml", $"<insend time=\"{DateTime.Now.ToString("MM/dd/yy HH:mm:ss")}\" target=\"{username}\">\t{packet.ToString()}\n");
 
-				////write
-				//File.AppendAllText("logs\\outsend.xml", $"<outsend time=\"{DateTime.Now.ToString("MM/dd/yy HH:mm:ss")}\">\t{packet.ToString()}\n");
-				//writer.WriteLine(packet.ToString());
-				//writer.Flush();
-
+					//write
+					readwrite = "write";
+					packet = new();
+					packet.SetBoard(users[enid].figures);				//<----------
+					packet.Assemble();
+					writer.WriteLine(packet.ToString());
+					writer.Flush();
+					File.AppendAllText("logs\\outsend.xml", $"<outsend time=\"{DateTime.Now.ToString("MM/dd/yy HH:mm:ss")}\" target=\"{username}\">\t{packet.ToString()}\n");
+				}
+				catch (IOException e)
+				{
+					Console.WriteLine($"{username} {readwrite} IoError>>>> {e.Message}");
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine($"{username} {readwrite} ERROR>>>>" + e.ToString());
+				}
 			}
-			Console.WriteLine("Client disconnected");
+			Console.WriteLine($"{username} disconnected");
 		}
 	}
 }

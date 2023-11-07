@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RChess", "RChess\RChess.csproj", "{71DA0C57-21EC-4BDA-B7A0-A2631B8E3E27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RChess", "RChess\RChess.csproj", "{71DA0C57-21EC-4BDA-B7A0-A2631B8E3E27}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SChess", "SChess\SChess.csproj", "{55A706F6-B391-4982-A22D-EE79A0015C41}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{F12BE534-6DAD-48F0-8E2C-6CBC11F3C2A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{71DA0C57-21EC-4BDA-B7A0-A2631B8E3E27}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71DA0C57-21EC-4BDA-B7A0-A2631B8E3E27}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71DA0C57-21EC-4BDA-B7A0-A2631B8E3E27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55A706F6-B391-4982-A22D-EE79A0015C41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55A706F6-B391-4982-A22D-EE79A0015C41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55A706F6-B391-4982-A22D-EE79A0015C41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55A706F6-B391-4982-A22D-EE79A0015C41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F12BE534-6DAD-48F0-8E2C-6CBC11F3C2A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F12BE534-6DAD-48F0-8E2C-6CBC11F3C2A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F12BE534-6DAD-48F0-8E2C-6CBC11F3C2A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F12BE534-6DAD-48F0-8E2C-6CBC11F3C2A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

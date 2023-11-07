@@ -11,8 +11,8 @@
 		public static Rectangle boardrect = new(100, 100, chessboard_width * 8, chessboard_width * 8);
 		public static int selected_piece = -1;
 		public static List<Vector2> move = new();
-		static readonly List<Figure> figuresF = new();
-		static readonly List<FigureE> figuresE = new();
+		public static readonly List<Figure> figuresF = new();
+		public static List<FigureE> figuresE = new();
 		//-----------get-----------------------------------
 		public static int getboard(float x, float y)
 		{
