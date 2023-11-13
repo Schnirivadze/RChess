@@ -45,25 +45,27 @@ namespace Shared
 			}
 		}
 		//====================================================SETTERS
-		public void AddInfo(InfoType type, string value)
+		public Packet AddInfo(InfoType type, string value)
 		{
 			XmlElement info = doc.CreateElement("info");
 			info.SetAttribute("type", ((int)type).ToString());
 			info.InnerText = value;
 			infos.Add(info);
+			return this;
 		}
-		public void AddFigure(FigureType type,float x, float y)
+		public Packet AddFigure(FigureType type,float x, float y)
 		{
 			XmlElement figure = doc.CreateElement("figure");
 			figure.SetAttribute("type", ((int)type).ToString());
 			figure.SetAttribute("x", ((int)x).ToString());
 			figure.SetAttribute("y", ((int)y).ToString());
 			figurelist.Add(figure);
+			return this;
 		}
-		public void SetBoard(XmlNodeList board)
+		public Packet SetBoard(XmlNodeList board)
 		{
-
 			this.board=board;
+			return this;
 		}
 		//====================================================GETTERS
 		public string GetInfo(InfoType type)
@@ -114,7 +116,7 @@ namespace Shared
 		}
 		public override string ToString()
 		{
-			
+			Logging.Log(Logging.LogType.Debug, doc.OuterXml);
 			return doc.OuterXml;
 		}
 	}

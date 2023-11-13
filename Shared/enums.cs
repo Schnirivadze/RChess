@@ -4,7 +4,7 @@
 	Id,
 	Exit,
 	Error,
-	EnemyId,
+	EnemyName,
 }
 public enum FigureType
 {

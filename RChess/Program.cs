@@ -7,12 +7,15 @@ using System.Net.Sockets;
 using System.Text;
 using System.Xml;
 using static Raylib_cs.Raylib;
+using static Shared.Logging;
+using static Shared.Logging.LogType;
 namespace RChess
 {
 	class Program
 	{
 		static void Main()
 		{
+			PrepareLog();
 			Console.OutputEncoding = Encoding.Unicode;
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(GlobalExceptionHandler);
 
@@ -35,18 +38,20 @@ namespace RChess
 		}
 		static void NetworkFunction()
 		{
-			Console.WriteLine("network started");
+			
+			Log(Info,"network started");
 			string ip = File.ReadAllText("ip.txt");
+			Console.Write("Enter name: ");
 			string name = Console.ReadLine();
 
 			TcpClient client = new TcpClient();
-			client.Client.Ttl = 255;
+			client.Client.Ttl = 120;
 			client.Connect(ip, 13000);
-			Console.WriteLine("Connected");
+			Log(Info,"Connected");
 
 			Packet packet = new();
-			StreamWriter sw = new(client.GetStream());
-			StreamReader sr = new(client.GetStream());
+			StreamWriter sw = new(client.GetStream(), Encoding.UTF8);
+			StreamReader sr = new(client.GetStream(), Encoding.UTF8);
 
 			//send info
 			packet = new();
@@ -54,8 +59,12 @@ namespace RChess
 			packet.Assemble();
 			sw.WriteLine(packet.ToString());
 			sw.Flush();
-
-			sr.ReadLine();
+			Thread.Sleep(1000);
+			string p = sr.ReadLine();
+			Log(Debug,p);
+			packet = new(p);
+			string enemy_name = packet.GetInfo(InfoType.EnemyName);
+			Log(Info,enemy_name);
 			List<FigureE> enemytemp = new();
 
 			while (true)
@@ -67,7 +76,6 @@ namespace RChess
 				for (int i = 0; i < Game.figuresF.Count; i++) packet.AddFigure(Game.figuresF[i].type, 7 - Game.figuresF[i].pos.X, 7 - Game.figuresF[i].pos.Y);
 				packet.Assemble();
 
-				Logging.LogBoard(false, packet.GetBoard());
 				sw.WriteLine(packet.ToString());
 				sw.Flush();
 
@@ -75,7 +83,6 @@ namespace RChess
 				packet = new(sr.ReadLine());
 
 				//process
-				Logging.LogBoard(true, packet.GetBoard());
 				enemytemp.Clear();
 				foreach (XmlNode figure_node in packet.GetBoard())
 				{
@@ -97,17 +104,9 @@ namespace RChess
 			Exception ex = (Exception)e.ExceptionObject;
 
 
-			Console.WriteLine("Глобальный обработчик исключений перехватил исключение: " + ex.Message);
+			Log(Error,"Глобальный обработчик исключений перехватил исключение: " + ex.Message);
 			// Можно выполнить дополнительную обработку или логирование здесь
-			try
-			{
-				if (!File.Exists("Errors.txt")) File.Create("Errors.txt");
-				File.AppendAllText("Errors.txt", "\n-------------------------------------------------------------\n" + ex.Message);
-			}
-			catch (Exception)
-			{
-				Console.WriteLine("Error while logging error (how)");
-			}
+			
 		}
 	}
 }
