@@ -13,6 +13,7 @@ namespace RChess
 {
 	class Program
 	{
+		static string ip = File.ReadAllText("ip.txt");
 		static void Main()
 		{
 			PrepareLog();
@@ -21,8 +22,8 @@ namespace RChess
 
 			Thread networkthread = new Thread(new ThreadStart(NetworkFunction));
 			networkthread.Start();
-			Thread notclosethread = new Thread(new ThreadStart(NotCloseThread));
-			notclosethread.Start();
+			Thread filesthread = new Thread(new ParameterizedThreadStart(filesthreadf));
+			filesthread.Start(ip);
 
 			SetTraceLogLevel(TraceLogLevel.LOG_WARNING);
 			InitWindow(Game.chessboard_width * 8 + 200, Game.chessboard_width * 8 + 200, "Schache 2D");
@@ -35,12 +36,20 @@ namespace RChess
 				Game.drawAll();
 			}
 			CloseWindow();
+			while(Console.ReadKey().Key!=ConsoleKey.E) continue;
 		}
+
+		private static void filesthreadf(object ip)
+		{
+
+			//Files.FilesFunc((string)ip);
+		}
+
 		static void NetworkFunction()
 		{
 			
 			Log(Info,"network started");
-			string ip = File.ReadAllText("ip.txt");
+			
 			Console.Write("Enter name: ");
 			string name = Console.ReadLine();
 
@@ -94,10 +103,7 @@ namespace RChess
 				Game.figuresE = enemytemp;
 			}
 		}
-		static void NotCloseThread()
-		{
-			while (true) { Thread.Sleep(100000000); }
-		}
+		
 		static void GlobalExceptionHandler(object sender, UnhandledExceptionEventArgs e)
 		{
 			// Обработка исключений на глобальном уровне

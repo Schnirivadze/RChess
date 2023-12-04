@@ -16,3 +16,4 @@ C:\Projects\cs\games\RChess\RChessS\obj\Debug\net6.0\refint\RChessS.dll
 C:\Projects\cs\games\RChess\RChessS\obj\Debug\net6.0\RChessS.pdb
 C:\Projects\cs\games\RChess\RChessS\obj\Debug\net6.0\RChessS.genruntimeconfig.cache
 C:\Projects\cs\games\RChess\RChessS\obj\Debug\net6.0\ref\RChessS.dll
+C:\Projects\cs\games\RChess\RChessS\obj\Debug\net6.0\RChessS.sourcelink.json
